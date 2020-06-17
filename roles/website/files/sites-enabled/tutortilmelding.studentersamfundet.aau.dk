@@ -1,0 +1,53 @@
+##
+# Managed through Ansible, do not edit on the server
+##
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name tutor.aau.dk tutor.stundetersamfundet.aau.dk;
+
+    include snippets/letsencrypt.conf;
+
+    # Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
+    return 301 https://tutortilmelding.studentersamfundet.aau.dk$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    include snippets/mozilla-ssl.conf;
+
+    server_name tutor.aau.dk tutor.studentersamfundet.aau.dk;
+
+    include snippets/letsencrypt.conf;
+
+    # Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
+    return 301 https://tutortilmelding.studentersamfundet.aau.dk$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    include snippets/mozilla-ssl.conf;
+
+    root /var/www/tutortilmelding.studentersamfundet.aau.dk;
+
+    index index.php index.html index.htm;
+
+    server_name tutortilmelding.studentersamfundet.aau.dk;
+
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+
+    include snippets/letsencrypt.conf;
+
+    include snippets/php.conf;
+}
+

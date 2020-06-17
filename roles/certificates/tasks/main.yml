@@ -1,0 +1,65 @@
+---
+- name: Check if lego ACME client is installed
+  stat:
+    path: /usr/local/bin/lego
+  register: lego_exe
+
+- name: Install lego ACME client
+  get_url:
+    url: "https://github.com/go-acme/lego/releases/download/v3.0.2/lego_v3.0.2_linux_amd64.tar.gz"
+    dest: /root/lego.tar.gz
+    checksum: sha256:6fb29df71eb920196459a4a8b5803c3e31639c26fb45967650a247a36f81f618
+  register: lego_download
+  when: lego_exe.stat.exists == false
+
+- name: Extract lego ACME client
+  unarchive:
+    src: /root/lego.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    exclude:
+      - "CHANGELOG.md"
+      - "LICENSE"
+  when: lego_download.changed
+
+- name: Create lego config directory
+  file:
+    path: /etc/lego
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: u=rwx,g=rx,o=
+    recurse: yes
+
+- name: Create webroot for ACME challenge
+  file:
+    path: /var/www/letsencrypt
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: ug=rwx,o=rx
+
+#- name: Register ACME account
+#  shell: "/usr/local/bin/lego --cert.timeout=600 --path=/etc/lego --server={{ acme_server }} --email={{ acme_email }} --http --http.webroot=/var/www/letsencrypt --accept-tos {% for domain in acme_domains %}--domains={{ domain }} {% endfor %}run"
+#  args:
+#    chdir: /etc/
+#  become: yes
+#  become_user: www-data
+#  #when: environment == "production"
+
+- name: Copy certificate renewal timer
+  template:
+    src: lego.timer
+    dest: /etc/systemd/system/lego.timer
+
+- name: Copy certificate renewal task
+  template:
+    src: lego.service
+    dest: /etc/systemd/system/lego.service
+
+- name: Enable certificate renewal task
+  systemd:
+    name: lego.timer
+    enabled: yes
+    state: started
+    daemon_reload: yes

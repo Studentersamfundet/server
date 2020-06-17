@@ -1,0 +1,13 @@
+[Unit]
+Description=Website roots
+Before=nginx.service
+
+[Mount]
+What=/dev/disk/by-uuid/82d26d84-4f89-42c4-b1e7-4f62f66ce629
+Where=/var/www
+Type=xfs
+Options=defaults
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=nginx.service

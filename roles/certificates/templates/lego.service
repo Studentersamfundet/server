@@ -1,0 +1,18 @@
+[Unit]
+Description=Renewal of certificate from Let's Encrypt
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+Environment="GCE_PROJECT=web-services-0216"
+Environment="GCE_SERVICE_ACCOUNT_FILE=/etc/letsencrypt/web-service-aa058e025e49.json lego"
+ExecStart=/usr/local/bin/lego \
+    --path=/etc/lego \
+    --server={{ acme_server }} \
+    --email={{ acme_email }} \
+    --dns gcloud \
+    --accept-tos \
+{% for domain in acme_domains %}    --domains={{ domain }} \
+{% endfor %}    renew

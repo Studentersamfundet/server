@@ -1,0 +1,13 @@
+---
+- name: Install unatteneded-upgrades
+  apt:
+    name: unattended-upgrades
+    state: latest
+
+- name: Copy config for unattended-upgrades
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    owner: root
+    group: root
+    mode: u=rw,go=r

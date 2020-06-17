@@ -1,0 +1,31 @@
+---
+- hosts: web
+  become: yes
+  gather_facts: yes
+  tasks:
+    - include_vars:
+        file: domains.yml
+    - debug:
+        msg: "Environment: {{deploy_env}}"
+    - include_role:
+        name: certificates
+      vars:
+        acme_server: https://acme-v02.api.letsencrypt.org/directory
+        acme_email: admin@studentersamfundet.dk
+        acme_domains: "{{ domains }}"
+      tags: certs
+    - include_role:
+        name: duckle29.dhparam
+      vars:
+        dhparams_keysize: 4096
+        dhparams_remote_directory: /etc/nginx
+        dhparams_filename: dhparams.pem
+        dhparams_owner: www-data
+        dhparams_group: www-data
+        dhparams_mode: u=rwx,go=rx
+        dhparams_directory_mode: u=rwx,go=rx
+    - include_role:
+        name: website
+      tags: website
+    - include_role:
+        name: misc

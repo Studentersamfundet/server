@@ -1,0 +1,9 @@
+[Unit]
+Description=Renewal of certificate from Let's Encrypt
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+RequiredBy=nginx.service
