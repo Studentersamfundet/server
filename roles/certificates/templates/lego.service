@@ -14,5 +14,7 @@ ExecStart=/usr/local/bin/lego \
     --email={{ acme_email }} \
     --dns gcloud \
     --accept-tos \
+    --cert.timeout 120 \
+    --dns-timeout 120 \
 {% for domain in acme_domains %}    --domains={{ domain }} \
 {% endfor %}    renew
