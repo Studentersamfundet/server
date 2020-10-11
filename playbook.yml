@@ -24,6 +24,7 @@
         dhparams_group: www-data
         dhparams_mode: u=rwx,go=rx
         dhparams_directory_mode: u=rwx,go=rx
+      when: not ansible_check_mode
     - include_role:
         name: website
       tags: website
