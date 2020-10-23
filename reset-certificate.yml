@@ -1,0 +1,34 @@
+---
+- hosts: web
+  become: yes
+  gather_facts: yes
+  tasks:
+    - include_vars:
+        file: domains.yml
+    - debug:
+        msg: "Environment: {{deploy_env}}"
+    - file:
+        state: absent
+        path: "/etc/lego/certificates/{{item}}"
+      with_items:
+        - "web02.prd.euwest.gc.studentersamfundet.dk.crt"
+        - "web02.prd.euwest.gc.studentersamfundet.dk.issuer.crt"
+        - "web02.prd.euwest.gc.studentersamfundet.dk.json"
+        - "web02.prd.euwest.gc.studentersamfundet.dk.key"
+    - name: Register ACME account
+      shell: |
+        export GCE_PROJECT=web-services-0216
+        export GCE_SERVICE_ACCOUNT_FILE=/etc/letsencrypt/web-service-aa058e025e49.json
+
+        /usr/local/bin/lego --path=/etc/lego --server=https://acme-v02.api.letsencrypt.org/directory --email=admin@studentersamfundet.dk --dns gcloud --accept-tos --cert.timeout=600 --dns-timeout 600 {% for domain in domains %}--domains={{ domain }} {% endfor %}run
+      args:
+        executable: /bin/bash
+      become: yes
+      become_user: www-data
+    - include_role:
+        name: certificates
+      vars:
+        acme_server: https://acme-v02.api.letsencrypt.org/directory
+        acme_email: admin@studentersamfundet.dk
+        acme_domains: "{{ domains }}"
+      tags: certs
