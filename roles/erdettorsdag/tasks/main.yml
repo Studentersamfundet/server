@@ -1,0 +1,10 @@
+---
+- name: Create and start erdettorsdag.dk container
+  docker_container:
+    name: erdettorsdag
+    image: jenrik/er-det-torsdag
+    state: started
+    pull: yes
+    restart_policy: unless-stopped
+    published_ports:
+      - "127.0.0.1:7485:80"

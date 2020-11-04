@@ -26,6 +26,10 @@
         dhparams_directory_mode: u=rwx,go=rx
       when: not ansible_check_mode
     - include_role:
+        name: docker
+    - include_role:
+        name: erdettorsdag
+    - include_role:
         name: website
       tags: website
     - include_role:
