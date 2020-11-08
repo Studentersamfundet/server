@@ -30,6 +30,10 @@
     - include_role:
         name: erdettorsdag
     - include_role:
+        name: git
+    - include_role:
+        name: aauvalg-redirect
+    - include_role:
         name: website
       tags: website
     - include_role:

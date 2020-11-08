@@ -1,0 +1,23 @@
+---
+- name: Create aauvalg.dk redirect directory
+  file:
+    path: /var/www/aauvalg.dk-redirect
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Clone aauvalg-redirect repository
+  git:
+    accept_hostkey: yes
+    clone: yes
+    dest: /var/www/aauvalg.dk-redirect
+    key_file: /root/id_rsa-github
+    repo: git@github.com:Studentersamfundet/aauvalg-redirect
+    update: yes
+
+- name: Set file ownership to allow nginx to read
+  file:
+    path: /var/www/aauvalg.dk-redirect
+    recurse: yes
+    owner: www-data
+    group: www-data

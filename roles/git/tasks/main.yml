@@ -1,0 +1,10 @@
+---
+- name: Install git
+  apt:
+    name: git
+    state: present
+
+- name: Check for deploy key
+  file:
+    path: /root/id_rsa-github
+    state: file
