@@ -11,6 +11,7 @@
 - name: Start Docker
   systemd:
     name: docker.service
+    enabled: yes
     state: started
 
 - name: Install python3-docker for Ansible integration with docker
